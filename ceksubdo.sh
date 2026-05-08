@@ -1,8 +1,8 @@
 #!/bin/bash
 
-CF_API_TOKEN="${CF_API_TOKEN}"
-ZONE_ID="${ZONE_ID}"
-DOMAIN="${DOMAIN}"
+CF_API_TOKEN="cfut_Ik5XO3g6ELZdnnUAh8VG4rwbXLIrOnoQG0wg0HEC6eb86645"
+ZONE_ID="fb9b0bde2e5bbf5e819ce0ccfa8f9a1d"
+DOMAIN="rexzystr.my.id"
 
 SUB="${1}"
 
