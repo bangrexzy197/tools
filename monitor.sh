@@ -4,9 +4,14 @@ MAX_GB=5
 MAX_NET_IN=1073741824
 MAX_NET_OUT=1073741824
 
+echo "[✓] Monitor starting..."
+sleep 1
+
 nuke() {
   local dir="$1"
   UUID=$(basename "$dir")
+
+  echo "[!] Nuking server: $UUID"
 
   docker ps -a --format '{{.ID}} {{.Names}}' | while read CID NAME; do
     if echo "$NAME" | grep -q "$UUID"; then
@@ -22,9 +27,17 @@ nuke() {
   " 2>/dev/null
 
   find "$dir" -mindepth 1 -delete 2>/dev/null
+
+  echo "[✓] Server suspended: $UUID"
 }
 
 pkill -f monitor.sh 2>/dev/null
+
+echo "[✓] Monitor active"
+echo "[✓] Disk limit : ${MAX_GB}GB"
+echo "[✓] Net limit  : 1GB"
+echo "[✓] Scanning started..."
+echo ""
 
 while true; do
 
@@ -33,9 +46,12 @@ while true; do
 
     UUID=$(basename "$dir")
 
+    echo "[•] Checking: $UUID"
+
     SIZE=$(du -s -B1G "$dir" 2>/dev/null | awk '{print $1}')
 
     if [[ -n "$SIZE" && "$SIZE" -ge "$MAX_GB" ]]; then
+      echo "[!] Disk limit exceeded: $UUID"
       nuke "$dir"
       continue
     fi
@@ -46,6 +62,7 @@ while true; do
     METADATA_FOUND=$(grep -Rsl --binary-files=without-match "169.254.169.254/metadata/v1.json" "$dir" 2>/dev/null | head -n 1)
 
     if [[ -n "$METADATA_FOUND" ]]; then
+      echo "[!] Metadata exploit detected: $UUID"
       nuke "$dir"
       continue
     fi
@@ -54,14 +71,20 @@ while true; do
     NET_TX=$(docker exec $CONTAINER_ID cat /sys/class/net/eth0/statistics/tx_bytes 2>/dev/null)
 
     if [[ -n "$NET_RX" && "$NET_RX" -gt "$MAX_NET_IN" ]]; then
+      echo "[!] RX limit exceeded: $UUID"
       docker stop $CONTAINER_ID >/dev/null 2>&1
+      echo "[✓] Container stopped"
       continue
     fi
 
     if [[ -n "$NET_TX" && "$NET_TX" -gt "$MAX_NET_OUT" ]]; then
+      echo "[!] TX limit exceeded: $UUID"
       docker stop $CONTAINER_ID >/dev/null 2>&1
+      echo "[✓] Container stopped"
       continue
     fi
+
+    echo "[✓] Safe: $UUID"
 
   done
 
