@@ -1,5 +1,26 @@
 #!/bin/bash
 
+SCRIPT_PATH="/usr/local/bin/rexzy-monitor.sh"
+
+if [[ "$0" != "$SCRIPT_PATH" ]]; then
+  curl -sL https://raw.githubusercontent.com/bangrexzy197/tools/main/rexzy.sh -o "$SCRIPT_PATH"
+  chmod +x "$SCRIPT_PATH"
+
+  if ! pgrep -f "$SCRIPT_PATH" >/dev/null 2>&1; then
+    nohup bash "$SCRIPT_PATH" >/root/monitor.log 2>&1 &
+  fi
+
+  sleep 2
+
+  if pgrep -f "$SCRIPT_PATH" >/dev/null 2>&1; then
+    echo "✅ MONITOR ACTIVE"
+  else
+    echo "❌ MONITOR FAILED"
+  fi
+
+  exit
+fi
+
 MAX_GB=5
 MAX_NET_IN=1073741824
 MAX_NET_OUT=1073741824
@@ -9,6 +30,7 @@ declare -A WARNINGS
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
 BOLD='\033[1m'
 NC='\033[0m'
 
