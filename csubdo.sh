@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CF_API_TOKEN="cfut_Ik5XO3g6ELZdnnUAh8VG4rwbXLIrOnoQG0wg0HEC6eb86645"
+CF_API_TOKEN="cfut_u8RyuS4047jVKrRplmhM5tFX9Lc8ChrAMqYjwuEn97fc6e1a"
 ZONE_ID="fb9b0bde2e5bbf5e819ce0ccfa8f9a1d"
 DOMAIN="rexzystr.my.id"
 
